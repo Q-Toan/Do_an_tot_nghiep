@@ -372,17 +372,21 @@ function ContactUs() {
         </div>
       </section>
       <section className="contact-map">
-        <div className="container-fluid">
-          <div className="google-map google-map__contact">
+    <div className="container-fluid">
+        <div className="google-map google-map__contact">
             <iframe
-              title="template google map"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d4562.753041141002!2d-118.80123790098536!3d34.152323469614075!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x80e82469c2162619%3A0xba03efb7998eef6d!2sCostco+Wholesale!5e0!3m2!1sbn!2sbd!4v1562518641290!5m2!1sbn!2sbd"
-              className="map__contact"
-              allowFullScreen=""
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3918.454506400302!2d106.62202029678954!3d10.852993999999994!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752bee0b0ef9e5%3A0x5b4da59e47aa97a8!2sQuang%20Trung%20Software%20City!5e0!3m2!1sen!2s!4v1732430135347!5m2!1sen!2s"
+                width="600"
+                height="450"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="Quang Trung Software City"
             />
-          </div>
         </div>
-      </section>
+    </div>
+</section>
     </div>
   );
 }

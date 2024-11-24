@@ -1,8 +1,7 @@
 import React from 'react';
-
-import "../../../public/styles/profile-edit.css";
-
+import "./profile-edit.css";
 import Image from 'next/image';
+import facker from '../../../public/assets/images/team/team-1-1.jpg';
 
 const ProfileEdit = () => {
     return (
@@ -11,7 +10,7 @@ const ProfileEdit = () => {
                 {/* Sidebar */}
                 <div className="lg:w-1/4 w-full p-5 text-black mb-5 lg:mb-0"> {/* Thêm khoảng cách giữa menu và content */}
                     <div className="flex flex-col items-center justify-center">
-                        <Image src="assets/images/faker.jpg" alt="Avatar" width={30} height={30} className="w-30 h-30 rounded-full mb-4" />
+                        <Image src={facker} alt="Avatar" width={30} height={30} className="w-30 h-30 rounded-full mb-4" />
                         <h3 className="mb-4 text-lg">Lee Sang-hyeok</h3>
                     </div>
                     <ul className="list-none">

@@ -64,7 +64,7 @@ export default function Banner() {
                                         style={{ objectFit: 'cover' }}
                                     />
                                 </div>
-                                <div className="h-full flex items-center justify-center items-center"> {/* Căn giữa khung chứa */}
+                                <div className="h-full flex items-center justify-center"> {/* Căn giữa khung chứa */}
                                     <div className="relative z-20 text-white text-left"> {/* Căn trái nội dung bên trong */}
                                         {/* Overlay Group */}
                                         <span className="hero-slider-one__title__overlay-group w-1/2" style={{ animation: 'fadeIn 1s forwards, fadeOut 1s forwards 2s' }}>
