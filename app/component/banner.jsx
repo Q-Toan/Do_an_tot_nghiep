@@ -12,25 +12,25 @@ import 'swiper/css/pagination';
 export default function Banner() {
     const slides = [
         {
-            img: "/assets/images/backgrounds/slider-1-1.jpg",
+            img: "/assets/images/backgrounds/anh1.jpg",
             title: "The Finest Meat Market",
             delay: [0.5, 1, 1.5],
             aboutLink: "/page/about",
         },
         {
-            img: "/assets/images/backgrounds/slider-1-2.jpg",
+            img: "/assets/images/backgrounds/anh2.jpg",
             title: "Fresh and Organic Meat",
             delay: [5.5, 6, 6.5],
             aboutLink: "/page/about",
         },
         {
-            img: "/assets/images/backgrounds/slider-1-3.jpg",
+            img: "/assets/images/backgrounds/anh1.jpg",
             title: "Best Quality Meat",
             delay: [10.5, 11, 11.5],
             aboutLink: "/page/about",
         },
         {
-            img: "/assets/images/backgrounds/slider-1-3.jpg",
+            img: "/assets/images/backgrounds/anh2.jpg",
             title: "Premium Cuts Just for You",
             delay: [15.5, 16, 16.5],
             aboutLink: "/page/about",

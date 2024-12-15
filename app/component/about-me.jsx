@@ -22,7 +22,7 @@ function Aboutme() {
                   className="w-full h-auto"
                 />
                 <a
-                  href="https://www.youtube.com/watch?v=h9MbznbxlLc"
+                  href="https://www.youtube.com/watch?v=4gSlWZTr4sY"
                   className="video-button video-popup"
                 >
                   <span className="icon-play"></span>
@@ -103,7 +103,6 @@ function Aboutme() {
                   <span className="boskery-btn__hover"></span>
                   <span className="boskery-btn__hover"></span>
                   <span className="boskery-btn__text">know about us</span>
-                  <i className="icon-meat-3 ml-2"></i>
                 </a>
                 <div className="contact__info mt-4">
                   <div className="contact__info__inner flex items-center">

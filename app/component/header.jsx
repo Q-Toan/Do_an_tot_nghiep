@@ -214,7 +214,7 @@ export default function Header() {
                             <span className="relative-order__hover"></span>
                             <span className="relative-order__hover"></span>
                             <span className="relative z-10">Order Now</span>
-                            <i className="icon-meat-3 relative z-10 ml-2"></i>
+                            
                         </Link>
                         </div>
                     </div>

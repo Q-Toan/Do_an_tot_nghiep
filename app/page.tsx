@@ -17,7 +17,6 @@ import Testimonials from "./component/Testimonials";
 export default function Home() {
   return (
     <>
-    <p>aa</p>
       <Banner />
       <MeatList />
       <Aboutme />
