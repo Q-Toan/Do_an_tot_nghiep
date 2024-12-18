@@ -31,7 +31,7 @@ function Order() {
                         <Image
                         width={12}
                         height={12}
-                          src="assets/images/shapes/crack burgers -.jpg"
+                          src="/assets/images/shapes/crack burgers -.jpg"
                           alt=""
                           className="w-12 h-12"
                         />
@@ -49,7 +49,7 @@ function Order() {
                         <Image
                         width={12}
                         height={12}
-                          src="assets/images/shapes/crack burgers -.jpg"
+                          src="/assets/images/shapes/crack burgers -.jpg"
                           alt=""
                           className="w-12 h-12"
                         />
@@ -67,7 +67,7 @@ function Order() {
                         <Image
                         width={12}
                         height={12}
-                          src="assets/images/shapes/crack burgers -.jpg"
+                          src="/assets/images/shapes/crack burgers -.jpg"
                           alt=""
                           className="w-12 h-12"
                         />
@@ -85,7 +85,7 @@ function Order() {
                         <Image
                         width={12}
                         height={12}
-                          src="assets/images/shapes/crack burgers -.jpg"
+                          src="/assets/images/shapes/crack burgers -.jpg"
                           alt=""
                           className="w-12 h-12"
                         />

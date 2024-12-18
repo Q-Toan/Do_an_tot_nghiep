@@ -102,7 +102,7 @@ function Aboutme() {
                   <span className="boskery-btn__hover"></span>
                   <span className="boskery-btn__hover"></span>
                   <span className="boskery-btn__hover"></span>
-                  <span className="boskery-btn__text">know about us</span>
+                  <span className="boskery-btn_text">know about us</span>
                 </a>
                 <div className="contact__info mt-4">
                   <div className="contact__info__inner flex items-center">

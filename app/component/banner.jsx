@@ -3,8 +3,6 @@ import React from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay, Pagination } from 'swiper/modules';
 import Image from 'next/image';
-
-// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/autoplay';
 import 'swiper/css/pagination';
@@ -12,27 +10,19 @@ import 'swiper/css/pagination';
 export default function Banner() {
     const slides = [
         {
-            img: "/assets/images/backgrounds/anh1.jpg",
-            title: "The Finest Meat Market",
-            delay: [0.5, 1, 1.5],
+            img: "/assets/images/backgrounds/banner1.jpg",
             aboutLink: "/page/about",
         },
         {
-            img: "/assets/images/backgrounds/anh2.jpg",
-            title: "Fresh and Organic Meat",
-            delay: [5.5, 6, 6.5],
+            img: "/assets/images/backgrounds/banner_2.jpg",
             aboutLink: "/page/about",
         },
         {
-            img: "/assets/images/backgrounds/anh1.jpg",
-            title: "Best Quality Meat",
-            delay: [10.5, 11, 11.5],
+            img: "/assets/images/backgrounds/banner_1.jpg",
             aboutLink: "/page/about",
         },
         {
-            img: "/assets/images/backgrounds/anh2.jpg",
-            title: "Premium Cuts Just for You",
-            delay: [15.5, 16, 16.5],
+            img: "/assets/images/backgrounds/banner_2.jpg",
             aboutLink: "/page/about",
         },
     ];
@@ -78,27 +68,9 @@ export default function Banner() {
 
                                         {/* Sub-title */}
                                         <h5 className="text-[20px] text-white font-bold leading-normal tracking-[5px] uppercase mb-2.5 pb-2.5 animate-fadeIn" style={{ animationDelay: `3s` }}>
-                                            Cut &amp; Carve Butcher
                                         </h5>
-
-                                        {/* Title */}
-                                        <h2 className="hero-slider-one__title animate-slideInLeft w-1/2 " style={{ animationDelay: `0.5s` }}>
-                                            {slide.title}
-                                        </h2>
-
                                         {/* Button */}
-                                        <div className="hero-slider-one__btn animate-slideInRight" style={{ animationDelay: `3.5s` }}>
-                                            <a href={slide.aboutLink} className="boskery-btn">
-                                                <span className="boskery-btn__hover"></span>
-                                                <span className="boskery-btn__hover"></span>
-                                                <span className="boskery-btn__hover"></span>
-                                                <span className="boskery-btn__hover"></span>
-                                                <span className="boskery-btn__hover"></span>
-                                                <span className="boskery-btn__hover"></span>
-                                                <span className="boskery-btn__text">know about us</span>
-                                                <i className="icon-meat-3"></i>
-                                            </a>
-                                        </div>
+                                        
                                     </div>
                                 </div>
                             </div>

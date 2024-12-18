@@ -2,174 +2,169 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import axios from 'axios';
 
 export default function RegisterPage() {
-    const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [address, setAddress] = useState('');
   const [acceptPolicy, setAcceptPolicy] = useState(false);
+  const [error, setError] = useState(null);
   const router = useRouter();
 
   const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev); // Đảo ngược trạng thái hiện mật khẩu
+    setShowPassword((prev) => !prev);
   };
-  const handleRegister = (e) => {
+
+  const handleRegister = async (e) => {
     e.preventDefault();
-    // Logic xử lý đăng ký
-    console.log("Registering with", { email, phoneNumber, password });
-    // Chuyển hướng đến trang chính sau khi đăng ký thành công
-    router.push('/');
+
+    if (!acceptPolicy) {
+      setError("You must accept the privacy policy.");
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:3000/api/users/register', {
+        name,
+        email,
+        phone: phoneNumber,
+        password,
+        address,
+        acceptPolicy,
+      });
+
+      router.push('/page/login');
+    } catch (err) {
+      setError(err.response?.data?.message || "An error occurred during registration.");
+    }
   };
 
   return (
-    <>
-      <section className="page-header">
-        <div className="page-header__bg" style={{ backgroundImage: 'url(/assets/images/backgrounds/page-header-bg.jpg)' }}></div>
-        <div className="max-w-[100%] relative text-center">
-          <h2 className="page-header__title">Register</h2>
-          <ul className="boskery-breadcrumb list-unstyled">
-            <li><a href="/">Home</a></li>
-            <li><span>Register</span></li>
-          </ul>
-        </div>
-      </section>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 py-6 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
+        <h2 className="text-center text-2xl font-bold text-gray-900">Register</h2>
+        <form className="mt-6 space-y-6" onSubmit={handleRegister}>
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+              Name
+            </label>
+            <input
+              type="text"
+              id="name"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="Your Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </div>
 
-      <section className="login-page">
-        <div className="max-w-[100%] pb-[192px]">
-          <div className="row">
-            <div className="col-md-12">
-              <div className="login-page__inner">
-                <div className="login-page__image wow fadeInLeft" data-wow-duration="1500ms">
-                  <Image src="/images/register.png" alt="login" width={659} height={816} />
-                </div>
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              Email address
+            </label>
+            <input
+              type="email"
+              id="email"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="Your Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-                <div className="login-page__wrap login-page__main-tab-box wow fadeInRight" data-wow-duration="1500ms">
-                  <div className="login-page__wrap__bg" style={{ backgroundImage: 'url(/assets/images/shapes/login-bg-1.png)' }}></div>
+          <div>
+            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+              Phone Number
+            </label>
+            <input
+              type="tel"
+              id="phone"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="Your Phone Number"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+              pattern="[0-9]{10}"
+              title="Please enter a valid 10-digit phone number"
+              required
+            />
+          </div>
 
-                  <div className="login-page__wrap__top">
-                    <div className="login-page__wrap__content">
-                      <h3 className="login-page__title">Welcome</h3>
-                    </div>
-
-                    <ul className="tab-buttons">
-                      <li
-                        className={"tab-btn relative-order"}
-                      >
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <a href="/page/login" className="relative-order__text">Log In</a>
-                       
-                      </li>
-                      <li
-                        className={`tab-btn relative-order  active-btn`}
-                      >
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <a href="/page/register" className="relative-order__text">Register</a>
-                        {/* <span className="relative-order__text">Register</span> */}
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div className="tabs-content">                   
-                      <div className="tab fadeInUp animated" data-wow-delay="200ms">
-                        <span className="login-page__tab-title">Sign up your Boskery account</span>
-                        <form className="login-page__form" onSubmit={handleRegister}>
-                          <div className="login-page__form__input-box">
-                            <input
-                              type="email"
-                              placeholder="Your Email"
-                              value={email}
-                              onChange={(e) => setEmail(e.target.value)}
-                            />
-                            <span className="icon-email"></span>
-                          </div>
-                          <div className="login-page__form__input-box">
-                            <input
-                              type="tel"
-                              placeholder="Your Phone Number"
-                              value={phoneNumber}
-                              onChange={(e) => setPhoneNumber(e.target.value)}
-                              pattern="[0-9]{10}" 
-                              title="Please enter a valid 10-digit phone number" 
-                              required
-                            />
-                            <span className="icon-mobile"></span>
-                          </div>
-                          <div className="login-page__form__input-box">
-                            <input
-                              type={showPassword ? 'text' : 'password'}
-                              placeholder="Password"
-                              className="login-page__password"
-                              value={password}
-                              onChange={(e) => setPassword(e.target.value)}
-                            />
-                            <span className="icon-padlock"></span>
-                            <i
-                              className={`toggle-password pass-field-icon fa ${showPassword ? 'fa-eye' : 'fa-eye-slash'}`}
-                              onClick={togglePasswordVisibility}
-                            ></i>
-                          </div>
-                          <div className="login-page__form__input-box">
-                            <input
-                              type={showPassword ? 'text' : 'password'}
-                              placeholder="Confirm Password"
-                              className="login-page__password"
-                              value={confirmPassword}
-                              onChange={(e) => setConfirmPassword(e.target.value)}
-                            />
-                            <span className="icon-padlock"></span>
-                            <i
-                              className={`toggle-password pass-field-icon fa ${showPassword ? 'fa-eye' : 'fa-eye-slash'}`}
-                              onClick={togglePasswordVisibility}
-                            ></i>
-                          </div>
-                          <div className="login-page__form__input-box login-page__form__input-box--button">
-                            <button type="submit" className="relative-order login-page__form__btn">Register</button>
-                          </div>
-                          <div className="login-page__form__input-box login-page__form__input-box--bottom">
-                            <div className="login-page__form__checked-box">
-                              <input type="checkbox" name="accept-policy" id="accept-policy"
-                                checked={acceptPolicy}
-                                onChange={(e) => setAcceptPolicy(e.target.checked)} // Cập nhật giá trị của checkbox
-                              />
-                              <label htmlFor="accept-policy"><span></span>I accept company privacy policy.</label>
-                            </div>
-                          </div>
-                        </form>
-                        <div className="login-page__signin">
-                          <h4 className="login-page__signin__title">Already have an account? <a href="/page/login">Sign In</a></h4>
-                          <span className="login-page__signin__text">Or sign in with</span>
-                          <div className="login-page__signin__buttons">
-                            <button type="button" className="login-page__signin__btn">
-                              <Image src="/assets/images/resources/google.png" alt="google" width={24} height={24} />
-                            </button>
-                            <button type="button" className="login-page__signin__btn">
-                              <Image src="/assets/images/resources/apple.png" alt="apple" width={24} height={24} />
-                            </button>
-                            <button type="button" className="login-page__signin__btn">
-                              <Image src="/assets/images/resources/facebook.png" alt="facebook" width={24} height={24} />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                  </div>
-                </div>
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <div className="mt-1 relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="Your Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <div
+                className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                onClick={togglePasswordVisibility}
+              >
+                <i className={`fas ${showPassword ? "fa-eye" : "fa-eye-slash"}`} />
               </div>
             </div>
           </div>
-        </div>
-      </section>
-    </>
+
+          <div>
+            <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+              Address
+            </label>
+            <input
+              type="text"
+              id="address"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="Your Address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="accept-policy"
+              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+              checked={acceptPolicy}
+              onChange={(e) => setAcceptPolicy(e.target.checked)}
+            />
+            <label htmlFor="accept-policy" className="ml-2 block text-sm text-gray-900">
+              I accept the privacy policy.
+            </label>
+          </div>
+
+          {error && <div className="text-red-500 text-sm mt-2">{error}</div>}
+
+          <div>
+            <button
+              type="submit"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#a42125] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Register
+            </button>
+          </div>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Already have an account?{' '}
+          <a href="/page/login" className="font-medium text-[#a42125] hover:text-indigo-500">
+            Sign In
+          </a>
+        </p>
+      </div>
+    </div>
   );
 }

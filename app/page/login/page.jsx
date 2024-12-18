@@ -1,149 +1,126 @@
 "use client";
-import { useState } from 'react';
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
+import { useState } from "react";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const router = useRouter();
 
-
   const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev); // Đảo ngược trạng thái hiện mật khẩu
+    setShowPassword((prev) => !prev);
   };
-  const handleLogin = (e) => {
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    // Logic xử lý đăng nhập
-    console.log("Logging in with", { email, password });
-    // Chuyển hướng đến trang chính sau khi đăng nhập thành công
-    router.push('/');
+
+    try {
+      const response = await axios.post("http://localhost:3000/api/users/login", {
+        email,
+        password,
+      });
+
+      if (response.data.accessToken) {
+        localStorage.setItem("accessToken", response.data.accessToken);
+        router.push("/");
+      } else {
+        setErrorMessage("Invalid email or password");
+      }
+    } catch (error) {
+      setErrorMessage("Something went wrong. Please try again later");
+    }
   };
 
   return (
-    <>
-      <section className="page-header">
-        <div className="page-header__bg" style={{ backgroundImage: 'url(/assets/images/backgrounds/page-header-bg.jpg)' }}></div>
-        <div className="max-w-[100%] relative text-center">
-          <h2 className="page-header__title">Log In</h2>
-          <ul className="boskery-breadcrumb list-unstyled">
-            <li><a href="/">Home</a></li>
-            <li>
-            <a href="/page/login" className="hover:underline"><span>Log In</span></a>
-            </li>
-          </ul>
-        </div>
-      </section>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 py-6 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
+        <h2 className="text-center text-2xl font-bold text-gray-900">Log In</h2>
+        <form className="mt-6 space-y-6" onSubmit={handleLogin}>
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              Email address
+            </label>
+            <input
+              type="email"
+              id="email"
+              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+              placeholder="Your Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+          </div>
 
-      <section className="login-page">
-        <div className="max-w-[100%]">
-          <div className="row">
-            <div className="col-md-12">
-              <div className="login-page__inner">
-                <div className="login-page__image wow fadeInLeft" data-wow-duration="1500ms">
-                  <Image src="/images/login.png" alt="login"width={659} height={816}  />
-                </div>
-
-                <div className="login-page__wrap login-page__main-tab-box wow fadeInRight" data-wow-duration="1500ms">
-                  <div className="login-page__wrap__bg" style={{ backgroundImage: 'url(/assets/images/shapes/login-bg-1.png)' }}></div>
-
-                  <div className="login-page__wrap__top">
-                    <div className="login-page__wrap__content">
-                      <h3 className="login-page__title">Welcome</h3>
-                    </div>
-
-                    <ul className="tab-buttons">
-                      <li
-                        className={"tab-btn relative-order active-btn"}
-                      >
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <a href="/page/login" className="relative-order__text">Log In</a>
-                       
-                      </li>
-                      <li
-                        className={`tab-btn relative-order`}
-                      >
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <span className="relative-order__hover"></span>
-                        <a href="/page/register" className="relative-order__text">Register</a>
-                        {/* <span className="relative-order__text">Register</span> */}
-                      </li>
-                    </ul>
-                  </div>
-
-                  <div className="tabs-content">   
-                      <div className="tab active-tab fadeInUp animated" data-wow-delay="200ms">
-                        <span className="login-page__tab-title">Sign in your Boskery account</span>
-                        <form className="login-page__form" onSubmit={handleLogin}>
-                          <div className="login-page__form__input-box">
-                            <input
-                              type="email"
-                              placeholder="Your Email"
-                              value={email}
-                              onChange={(e) => setEmail(e.target.value)}
-                            />
-                            <span className="icon-email"></span>
-                          </div>
-                          <div className="login-page__form__input-box">
-                            <input
-                              type={showPassword ? 'text' : 'password'}
-                              placeholder="Password"
-                              className="login-page__password"
-                              value={password}
-                              onChange={(e) => setPassword(e.target.value)}
-                            />
-                            <span className="icon-padlock"></span>
-                            <i
-                              className={`toggle-password pass-field-icon fa ${showPassword ? 'fa-eye' : 'fa-eye-slash'}`}
-                              onClick={togglePasswordVisibility}
-                            ></i>
-                          </div>
-                          <div className="login-page__form__input-box login-page__form__input-box--forgot">
-                            <a href="#" className="login-page__form__forgot">Forgot password?</a>
-                          </div>
-                          <div className="login-page__form__input-box login-page__form__input-box--button">
-                            <button type="submit" className="relative-order login-page__form__btn">Log In</button>
-                          </div>
-                          <div className="login-page__form__input-box login-page__form__input-box--checkbox">
-                            <div className="login-page__form__checked-box">
-                              <input type="checkbox" name="remember-policy" id="remember-policy" />
-                              <label htmlFor="remember-policy"><span></span>Remember me</label>
-                            </div>
-                          </div>
-                        </form>
-                        <div className="login-page__signin">
-                          <h4 className="login-page__signin__title">Don’t have an account? <a href="/page/register">Register</a></h4>
-                          <span className="login-page__signin__text">Or sign in with</span>
-                          <div className="login-page__signin__buttons">
-                            <button type="button" className="login-page__signin__btn">
-                              <Image src="/assets/images/resources/google.png" alt="google" width={24} height={24} />
-                            </button>
-                            <button type="button" className="login-page__signin__btn">
-                              <Image src="/assets/images/resources/apple.png" alt="apple" width={24} height={24} />
-                            </button>
-                            <button type="button" className="login-page__signin__btn">
-                              <Image src="/assets/images/resources/facebook.png" alt="facebook" width={24} height={24} />
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                  </div>
-                </div>
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700">
+              Password
+            </label>
+            <div className="mt-1 relative">
+              <input
+                type={showPassword ? "text" : "password"}
+                id="password"
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                placeholder="Your Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <div
+                className="absolute inset-y-0 right-0 flex items-center pr-3 cursor-pointer"
+                onClick={togglePasswordVisibility}
+              >
+                <i className={`fas ${showPassword ? "fa-eye" : "fa-eye-slash"}`} />
               </div>
             </div>
           </div>
-        </div>
-      </section>
-    </>
+
+          {errorMessage && (
+            <div className="text-red-500 text-sm mt-2">{errorMessage}</div>
+          )}
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="remember"
+                className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+              />
+              <label
+                htmlFor="remember"
+                className="ml-2 block text-sm text-gray-900"
+              >
+                Remember me
+              </label>
+            </div>
+
+            <div className="text-sm">
+              <a href="/page/forgotpassword" className="font-medium text-indigo-600 hover:text-indigo-500">
+                Forgot your password?
+              </a>
+            </div>
+          </div>
+
+          <div>
+            <button
+              type="submit"
+              className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#a42125] hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Log In
+            </button>
+          </div>
+        </form>
+
+        <p className="mt-6 text-center text-sm text-gray-600">
+          Don’t have an account?{' '}
+          <a href="/page/register" className="font-medium text-[#a42125] hover:text-indigo-500">
+            Register
+          </a>
+        </p>
+      </div>
+    </div>
   );
 }

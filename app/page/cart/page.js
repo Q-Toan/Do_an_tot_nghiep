@@ -1,68 +1,128 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import { useCart } from '../../component/CartContext';
-import Image from 'next/image';
+import React, { useEffect, useState } from "react";
+import { PayPalButton } from "react-paypal-button-v2";
+import Image from "next/image";
 
 export default function Cart() {
-    const { cartItems, removeFromCart, updateQuantity } = useCart();
-    
+    const [cartItems, setCartItems] = useState([]);
     const [subtotal, setSubtotal] = useState(0);
     const [couponCode, setCouponCode] = useState("");
-    const [discount, setDiscount] = useState(0); // State cho mã giảm giá
+    const [discount, setDiscount] = useState(0);
+    const [shippingMethod, setShippingMethod] = useState("cod"); 
 
-    // Đảm bảo cartItems là một mảng
-    const items = cartItems || [
-        {
-            id: 1,
-            image : '/images/sanpham/sp1.png',
-            name: 'Organ Meat',
-            price: 69,
-            quantity: 1,
-        },
-        {
-            id: 2,
-            image : '/images/sanpham/sp5.png',
-            name: 'Organ Meat',
-            price: 69,
-            quantity: 1,
-        },
-    ]; // Nếu cartItems là undefined, sẽ sử dụng mảng rỗng
-
+    // Lấy dữ liệu từ localStorage khi component được render lần đầu
     useEffect(() => {
-        const newSubtotal = items.reduce((total, item) => total + (item.price * item.quantity), 0);
-        setSubtotal(newSubtotal - discount); // Áp dụng giảm giá vào subtotal
-    }, [items, discount]);
+        const storedCart = localStorage.getItem("cart");
+        if (storedCart) {
+            setCartItems(JSON.parse(storedCart));
+        }
+    }, []);
 
+    // Tính toán lại subtotal khi cartItems hoặc discount thay đổi
+    useEffect(() => {
+        const newSubtotal = cartItems.reduce(
+            (total, item) => total + item.price * item.quantity,
+            0
+        );
+        setSubtotal(newSubtotal - discount);
+    }, [cartItems, discount]);
+
+    // Đồng bộ trạng thái giỏ hàng vào localStorage
+    const syncLocalStorage = (updatedCart) => {
+        setCartItems(updatedCart);
+        localStorage.setItem("cart", JSON.stringify(updatedCart));
+    };
+
+    // Cập nhật số lượng sản phẩm
+    const updateQuantity = (_id, newQuantity) => {
+        const updatedCart = cartItems.map((item) =>
+            item._id === _id
+                ? { ...item, quantity: Math.max(newQuantity, 1) }
+                : item
+        );
+        syncLocalStorage(updatedCart);
+    };
+
+    // Xóa sản phẩm khỏi giỏ hàng
+    const removeFromCart = (_id) => {
+        const updatedCart = cartItems.filter((item) => item._id !== _id);
+        syncLocalStorage(updatedCart);
+    };
+
+    // Áp dụng mã giảm giá
     const handleApplyCoupon = (e) => {
         e.preventDefault();
-        if (couponCode === "DISCOUNT10") { // Kiểm tra mã giảm giá hợp lệ
-            setDiscount(10); // Giảm giá 10 đô la
+        if (couponCode === "DISCOUNT10") {
+            setDiscount(10);
         } else {
             alert("Mã giảm giá không hợp lệ");
         }
     };
 
+    // Xử lý khi nhấn nút Checkout
+    const handleCheckout = async () => {
+        // Lấy AccessToken, userId và giỏ hàng từ localStorage
+        const accessToken = localStorage.getItem("accessToken");
+        const cartItems = JSON.parse(localStorage.getItem("cart"));
+    
+        if (!accessToken) {
+            alert("Please log in to proceed with checkout.");
+            console.error("No accessToken found. User might not be logged in.");
+            return;
+        }
+    
+        if (!cartItems || cartItems.length === 0) {
+            alert("Your cart is empty. Please add items to the cart before checking out.");
+            console.error("Cart is empty.");
+            return;
+        }
+    
+        try {
+            // Giải mã accessToken để lấy userId
+            const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
+            const userId = tokenPayload.userId;
+    
+            // Chuẩn bị payload cho API
+            const payload = {
+                accessToken,
+                userId,
+                products: cartItems.map((item) => ({
+                    productId: item._id,
+                    quantity: item.quantity,
+                })),
+            };
+    
+            // Gửi yêu cầu POST tới API /orders
+            const response = await fetch("http://localhost:3000/api/orders", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+    
+            const data = await response.json();
+    
+            if (response.ok) {
+                alert("Order placed successfully!");
+                console.log("Order created successfully:", data.order);
+    
+                // Xóa giỏ hàng khỏi localStorage sau khi đặt hàng thành công
+                localStorage.removeItem("cart");
+            } else {
+                console.error("Failed to create order:", data.message);
+                alert(`Failed to place the order: ${data.message}`);
+            }
+        } catch (error) {
+            console.error("Error during checkout:", error);
+            alert("Something went wrong during checkout. Please try again.");
+        }
+    };
+    
+    
+
     return (
         <div>
-            <section className="page-header relative" style={{ height: '320px' }}>
-                <div
-                    className="page-header__bg absolute inset-0 bg-cover bg-center"
-                    style={{ backgroundImage: "url('/images/banner/banner8.png')" }}
-                ></div>
-
-                <div className="container mx-auto px-4 py-8 relative z-10 flex flex-col justify-center items-center h-full">
-                    <h2 className="page-header__title text-[55px] font-bold text-white text-center">Cart</h2>
-                    <ul className="boskery-breadcrumb flex text-white list-unstyled text-[16px]">
-                        <li>
-                            <a href="/" className="hover:underline">Home</a>
-                        </li>
-                        <li>
-                        <a href="/page/cart" className="hover:underline"><span>Cart</span></a>
-                        </li>
-                    </ul>
-                </div>
-            </section>
-
             <section className="cart-page section-space bg-[#ffffff]">
                 <div className="container mx-auto">
                     <div className="flex flex-wrap -mx-4">
@@ -79,13 +139,15 @@ export default function Cart() {
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {items.length === 0 ? (
+                                        {cartItems.length === 0 ? (
                                             <tr>
-                                                <td colSpan="5" className="text-center">Your cart is empty.</td>
+                                                <td colSpan="5" className="text-center">
+                                                    Your cart is empty.
+                                                </td>
                                             </tr>
                                         ) : (
-                                            items.map(item => (
-                                                <tr key={item.id}>
+                                            cartItems.map((item) => (
+                                                <tr key={item._id}>
                                                     <td>
                                                         <div className="cart-page__table__meta flex items-center">
                                                             <div className="cart-page__table__meta__img mr-4">
@@ -98,37 +160,57 @@ export default function Cart() {
                                                                 />
                                                             </div>
                                                             <h3 className="cart-page__table__meta__title">
-                                                                <a href="/page/product-detail" className="text-blue-500 hover:underline">{item.name}</a>
+                                                                <a
+                                                                    href="/page/product-detail"
+                                                                    className="text-blue-500 hover:underline"
+                                                                >
+                                                                    {item.name}
+                                                                </a>
                                                             </h3>
                                                         </div>
                                                     </td>
-                                                    <td className="cart-page__table__price px-4 py-2">${item.price.toFixed(2)}</td>
+                                                    <td className="cart-page__table__price px-4 py-2">
+                                                        ${item.price.toFixed(2)}
+                                                    </td>
                                                     <td>
                                                         <div className="product-details__quantity">
                                                             <div className="flex items-center quantity-box">
-                                                                <button type="button" className="sub bg-gray-300 p-2" onClick={() => updateQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1}>
-                                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M20 12H4" />
-                                                                    </svg>
+                                                                <button
+                                                                    type="button"
+                                                                    className="sub bg-gray-300 p-2"
+                                                                    onClick={() =>
+                                                                        updateQuantity(item._id, item.quantity - 1)
+                                                                    }
+                                                                    disabled={item.quantity <= 1}
+                                                                >
+                                                                    -
                                                                 </button>
-                                                                <input type="text" value={item.quantity} className="border border-gray-300 px-2 w-12 text-center" readOnly />
-                                                                <button type="button" className="add bg-gray-300 p-2" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
-                                                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M12 4v16m8-8H4" />
-                                                                    </svg>
+                                                                <input
+                                                                    type="text"
+                                                                    value={item.quantity}
+                                                                    className="border border-gray-300 px-2 w-12 text-center"
+                                                                    readOnly
+                                                                />
+                                                                <button
+                                                                    type="button"
+                                                                    className="add bg-gray-300 p-2"
+                                                                    onClick={() =>
+                                                                        updateQuantity(item._id, item.quantity + 1)
+                                                                    }
+                                                                >
+                                                                    +
                                                                 </button>
                                                             </div>
                                                         </div>
                                                     </td>
-                                                    <td className="cart-page__table__total px-4 py-2">${(item.price * item.quantity).toFixed(2)}</td>
+                                                    <td className="cart-page__table__total px-4 py-2">
+                                                        ${(item.price * item.quantity).toFixed(2)}
+                                                    </td>
                                                     <td>
                                                         <button
-                                                            onClick={() => removeFromCart(item.id)}
+                                                            onClick={() => removeFromCart(item._id)}
                                                             className="cart-page__table__remove text-red-500 hover:no-underline"
                                                         >
-                                                            <svg className="w-4 h-4 inline-block mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M6 18L18 6M6 6l12 12" />
-                                                            </svg>
                                                             Remove
                                                         </button>
                                                     </td>
@@ -138,38 +220,20 @@ export default function Cart() {
                                     </tbody>
                                 </table>
                             </div>
-
                             <div className="cart-page__coupone">
                                 <h5 className="cart-page__coupone__title">Coupon:</h5>
-                                <div className="cart-page__coupone__box flex items-center">
-                                    <form onSubmit={handleApplyCoupon} className="cart-page__coupone__form flex-grow">
-                                        <input 
-                                            type="text" 
-                                            placeholder="Enter Coupon Code" 
-                                            value={couponCode}
-                                            onChange={(e) => setCouponCode(e.target.value)} // Cập nhật giá trị mã giảm giá
-                                            className="cart-cupon__coupone__input border border-gray-300 py-2 px-3 w-full" 
-                                        />
-                                        <button type="submit" className="cart-page__coupone__btn cart-page__bottom-btn boskery-btn">
-                                            <span className="boskery-btn__hover"></span>
-                                            <span className="boskery-btn__hover"></span>
-                                            <span className="boskery-btn__hover"></span>
-                                            <span className="boskery-btn__hover"></span>
-                                            <span className="boskery-btn__hover"></span>
-                                            <span className="boskery-btn__hover"></span>
-                                            <span className="boskery-btn__text">Apply Code</span>
-                                        </button>
-                                    </form>
-                                    <a href="/page/cart" className="cart-page__update-btn cart-page__bottom-btn boskery-btn">
-                                        <span className="boskery-btn__hover"></span>
-                                        <span className="boskery-btn__hover"></span>
-                                        <span className="boskery-btn__hover"></span>
-                                        <span className="boskery-btn__hover"></span>
-                                        <span className="boskery-btn__hover"></span>
-                                        <span className="boskery-btn__hover"></span>
-                                        <span className="boskery-btn__text">Update Cart</span>
-                                    </a>
-                                </div>
+                                <form onSubmit={handleApplyCoupon}>
+                                    <input
+                                        type="text"
+                                        placeholder="Enter Coupon Code"
+                                        value={couponCode}
+                                        onChange={(e) => setCouponCode(e.target.value)}
+                                        className="border border-gray-300 px-2 py-1 w-full"
+                                    />
+                                    <button type="submit" className="bg-blue-500 text-white px-4 py-2">
+                                        Apply Code
+                                    </button>
+                                </form>
                             </div>
                         </div>
 
@@ -178,26 +242,67 @@ export default function Cart() {
                                 <ul className="cart-page__cart-total list-none">
                                     <li>
                                         <span>Subtotal</span>
-                                        <span className="cart-page__cart-total__amount">${subtotal.toFixed(2)}</span>
-                                    </li>
-                                    <li>
-                                        <h4 className="cart-page__cart-total__address">Shipping Address</h4>
-                                        <address className="cart-page__cart-total__address__text">2801 Lafayette Blvd, Norfolk, Vermont 23509, United States</address>
-                                    </li>
-                                    <li>
-                                        <span>Total</span>
-                                        <span className="cart-page__cart-total__amount">${subtotal.toFixed(2)}</span>
+                                        <span>${subtotal.toFixed(2)}</span>
                                     </li>
                                 </ul>
-                                <a href="/page/checkout" className="boskery-btn cart-page__checkout-btn w-full flex justify-center items-center mt-4">
-                                    <span className="boskery-btn__hover"></span>
-                                    <span className="boskery-btn__hover"></span>
-                                    <span className="boskery-btn__hover"></span>
-                                    <span className="boskery-btn__hover"></span>
-                                    <span className="boskery-btn__hover"></span>
-                                    <span className="boskery-btn__hover"></span>
-                                    <span className="boskery-btn__text">Checkout</span>
-                                </a>
+
+                                {/* Lựa chọn phương thức giao hàng */}
+                                <div className="mt-4">
+                                    <h5 className="text-lg font-semibold">Shipping Method</h5>
+                                    <div className="mt-2">
+                                        <label className="block">
+                                            <input
+                                                type="radio"
+                                                name="shipping"
+                                                value="cod"
+                                                checked={shippingMethod === "cod"}
+                                                onChange={(e) => setShippingMethod(e.target.value)}
+                                                className="mr-2"
+                                            />
+                                            Cash on Delivery (COD)
+                                        </label>
+                                        <label className="block">
+                                            <input
+                                                type="radio"
+                                                name="shipping"
+                                                value="paypal"
+                                                checked={shippingMethod === "paypal"}
+                                                onChange={(e) => setShippingMethod(e.target.value)}
+                                                className="mr-2"
+                                            />
+                                            PayPal
+                                        </label>
+                                    </div>
+                                </div>
+                                {shippingMethod === "cod" ? (
+                                    <button
+                                        className="bg-green-500 text-white px-4 py-2 block text-center mt-4"
+                                        onClick={handleCheckout}
+                                    >
+                                        Checkout
+                                    </button>
+                                ) : (
+                                    <PayPalButton
+                                        amount={subtotal.toFixed(2)}
+                                        onSuccess={(details, data) => {
+                                            alert("Transaction completed by " + details.payer.name.given_name);
+                                            localStorage.removeItem("cart");
+                                            return fetch("/paypal-transaction-complete", {
+                                                method: "post",
+                                                headers: {
+                                                    "Content-Type": "application/json",
+                                                },
+                                                body: JSON.stringify({
+                                                    orderID: data.orderID,
+                                                }),
+                                            });
+                                        }}
+                                        onError={(err) => {
+                                            console.error("PayPal Checkout Error: ", err);
+                                            alert("Payment failed. Please try again.");
+                                        }}
+                                    />
+                                )}
                             </div>
                         </div>
                     </div>

@@ -4,6 +4,7 @@ import MobileNav from '../component/MobileNav';
 import SearchPopup from '../component/SearchPopup';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Router } from 'next/router';
 
 
 export default function Header() {
@@ -13,14 +14,27 @@ export default function Header() {
     const [isServicesDropdownOpen, setIsServicesDropdownOpen] = useState(false);
     const [isNewsDropdownOpen, setIsNewsDropdownOpen] = useState(false);
     const [isSearchPopupOpen, setIsSearchPopupOpen] = useState(false);
+    const [accessToken, setAccessToken] = useState(null); 
     const currentPage = 'home'; 
     const mainMenuRef = useRef(null);
     const mobileNavRef = useRef(null);
 
+
+    useEffect(() => {
+        const token = localStorage.getItem('accessToken');
+        setAccessToken(token); // Cập nhật state
+    }, []);
+
+    const handleLogout = () => {
+        localStorage.removeItem('accessToken'); 
+        setAccessToken(null);
+        alert("Bạn đã logout!");
+        Router.push('/');
+    };
+
     useEffect(() => {
         // Lấy tên file từ URL
         const fileName = window.location.href.split("/").pop();
-
         const mainNavUL = mainMenuRef.current;
         if (mainNavUL) {
             mainNavUL.querySelectorAll("li").forEach(li => {
@@ -75,7 +89,7 @@ export default function Header() {
                 toggleServicesDropdown={toggleServicesDropdown}
                 isNewsDropdownOpen={isNewsDropdownOpen}
                 toggleNewsDropdown={toggleNewsDropdown}
-                 />
+                />
             <SearchPopup isSearchPopupOpen={isSearchPopupOpen} closePopup={closePopup}  />
             <div className="flex items-center space-x-4" style={{ marginRight: "78px" }}>
                 <Image src="/images/logo.png" alt="Company Logo" width={100} height={100} className="w-[100px] h-full" style={{ maxWidth: "100px" }} />
@@ -85,9 +99,9 @@ export default function Header() {
                 <div className="bg-red-700 text-white flex justify-between items-center px-[70px] py-3 hidden md:flex">
                     <div className="flex items-center space-x-4 hidden xxl:flex">
                         <i className="fas fa-envelope"></i>
-                        <span className='hover:underline'>needhelp@company.com</span>
+                        <span className='hover:underline'>toanlqps31685@fpt.edu.vn</span>
                         <i className="fas fa-map-marker-alt"></i>
-                        <span className='hover:underline'>85 Ketch Harbour Road Bensalem, PA 19020</span>
+                        <span className='hover:underline'>Công Viên phẩn Mền quang trung, Quận 12</span>
                     </div>
                     <div className="flex items-center space-x-4">
                         <ul className="list-unstyled topbar__pages flex space-x-4">
@@ -205,17 +219,28 @@ export default function Header() {
                             </Link>
                             <i className="fas fa-shopping-cart text-black"></i>
                         </div>
-                       <div className="flex justify-center items-center hidden  dt:flex">
-                        <Link href="/page/contactus" className="relative-order flex justify-center items-center bg-red-700 text-white ml-[51px] w-[205px] h-[80px] p-0" style={{ paddingTop: '32px' }}>
+                        <div className="flex justify-center items-center hidden  dt:flex">
+                        {accessToken ? (
+                            <Link href="/" onClick={handleLogout} className="relative-order flex justify-center items-center bg-red-700 text-white ml-[51px] w-[205px] h-[80px] p-0" style={{ paddingTop: '32px' }}>
                             <span className="relative-order__hover"></span>
                             <span className="relative-order__hover"></span>
                             <span className="relative-order__hover"></span>
                             <span className="relative-order__hover"></span>
                             <span className="relative-order__hover"></span>
                             <span className="relative-order__hover"></span>
-                            <span className="relative z-10">Order Now</span>
-                            
+                            <span className="relative z-10">Logout</span>
                         </Link>
+                        ) : (
+                            <Link href="/page/login" className="relative-order flex justify-center items-center bg-red-700 text-white ml-[51px] w-[205px] h-[80px] p-0" style={{ paddingTop: '32px' }}>
+                            <span className="relative-order__hover"></span>
+                            <span className="relative-order__hover"></span>
+                            <span className="relative-order__hover"></span>
+                            <span className="relative-order__hover"></span>
+                            <span className="relative-order__hover"></span>
+                            <span className="relative-order__hover"></span>
+                            <span className="relative z-10">Login</span>
+                        </Link>
+                        )}
                         </div>
                     </div>
                 </div>

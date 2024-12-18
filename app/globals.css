@@ -568,10 +568,17 @@ h6 {
 }
 .boskery-btn__text {
   position: relative;
+  top: 1px;
+  color: inherit;
+}
+
+.boskery-btn_text {
+  position: relative;
   left: 27px;
   top: 1px;
   color: inherit;
 }
+
 .boskery-btn i {
   position: relative;
   position: absolute;

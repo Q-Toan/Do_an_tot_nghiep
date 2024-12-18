@@ -53,19 +53,7 @@ export default function Footer() {
                 <h2 className="footer-widget__title text-xl font-bold">
                   Providing fresh and organic meat from our farm in a very hygienic way.
                 </h2>
-                <a
-                  href="/page/contactus"
-                  className="relative-order mt-3 inline-flex items-center px-6 py-2 border border-transparent rounded-lg bg-blue-500 text-white"
-                >
-                  <span className="relative-order__hover"></span>
-                  <span className="relative-order__hover"></span>
-                  <span className="relative-order__hover"></span>
-                  <span className="relative-order__hover"></span>
-                  <span className="relative-order__hover"></span>
-                  <span className="relative-order__hover"></span>
-                  <span className="relative-order__text">Contact Us</span>
-                  <i className="icon-meat-3 ml-2"></i>
-                </a>
+                
               </div>
             </div>
             <div className="w-full animate-fadeIn">
@@ -89,7 +77,7 @@ export default function Footer() {
                   </li>
                   <li>
                     <Link href="page/newslist" className="hover:underline text-white">
-                     Latest News
+                      Latest News
                     </Link>
                   </li>
                   <li>
@@ -105,19 +93,19 @@ export default function Footer() {
                 <h2 className="footer-widget__title text-xl font-bold">Contact</h2>
                 <div className="footer-widget__contact">
                   <address className="footer-widget__address">
-                    85 Ketch Harbour Road Bensal PA 19020
+                    Công Viên phẩn Mền quang trung, Quận 12
                   </address>
                   <ul className="list-none">
                     <li>
                       <span className="icon-paper-plane text-[#A42125]"></span>{" "}
                       <Link href="page/contactus" className="hover:underline text-white">
-                        needhelp@company.com
+                        toanlqps31685@fpt.edu.vn
                       </Link>
                     </li>
                     <li>
                       <span className="icon-phone-call text-[#A42125]"></span>{" "}
                       <Link href="tel:+9156980036420" className="hover:underline text-white">
-                        +91 5698 0036 420
+                        +84 336 379 906
                       </Link>
                     </li>
                   </ul>
@@ -228,7 +216,7 @@ export default function Footer() {
         <div className="container mx-auto">
           <div className="flex justify-center">
             <p className="text-white">
-              © Copyright <span className="dynamic-year">2024</span> by Boskery HTML Template.
+              © Copyright <span className="dynamic-year">2024</span> by Team 5
             </p>
           </div>
         </div>
