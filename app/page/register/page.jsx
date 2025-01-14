@@ -1,16 +1,14 @@
 "use client";
 import { useState } from 'react';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [name, setName] = useState('');
+  const [username, setUserName] = useState('');
   const [email, setEmail] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
   const [password, setPassword] = useState('');
-  const [address, setAddress] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [acceptPolicy, setAcceptPolicy] = useState(false);
   const [error, setError] = useState(null);
   const router = useRouter();
@@ -27,15 +25,19 @@ export default function RegisterPage() {
       return;
     }
 
+    if (password !== confirmPassword) {
+      setError("Password and confirm password do not match.");
+      return;
+    }
+
     try {
-      const response = await axios.post('http://localhost:3000/api/users/register', {
-        name,
+      const response = await axios.post('http://localhost:5000/api/users/register', {
+        username,
         email,
-        phone: phoneNumber,
         password,
-        address,
-        acceptPolicy,
+        confirmPassword
       });
+      console.log(response.data);
 
       router.push('/page/login');
     } catch (err) {
@@ -57,8 +59,8 @@ export default function RegisterPage() {
               id="name"
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
               placeholder="Your Name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              value={username}
+              onChange={(e) => setUserName(e.target.value)}
               required
             />
           </div>
@@ -74,23 +76,6 @@ export default function RegisterPage() {
               placeholder="Your Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-
-          <div>
-            <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
-              Phone Number
-            </label>
-            <input
-              type="tel"
-              id="phone"
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              placeholder="Your Phone Number"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              pattern="[0-9]{10}"
-              title="Please enter a valid 10-digit phone number"
               required
             />
           </div>
@@ -118,17 +103,18 @@ export default function RegisterPage() {
             </div>
           </div>
 
+          {/* Thêm trường confirm password */}
           <div>
-            <label htmlFor="address" className="block text-sm font-medium text-gray-700">
-              Address
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+              Confirm Password
             </label>
             <input
-              type="text"
-              id="address"
+              type="password"
+              id="confirmPassword"
               className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              placeholder="Your Address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              placeholder="Confirm Your Password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               required
             />
           </div>

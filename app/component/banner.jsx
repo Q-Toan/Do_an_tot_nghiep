@@ -10,19 +10,19 @@ import 'swiper/css/pagination';
 export default function Banner() {
     const slides = [
         {
-            img: "/assets/images/backgrounds/banner1.jpg",
+            img: "/assets/images/backgrounds/banner5.jpg",
             aboutLink: "/page/about",
         },
         {
-            img: "/assets/images/backgrounds/banner_2.jpg",
+            img: "/assets/images/backgrounds/banner6.jpg",
             aboutLink: "/page/about",
         },
         {
-            img: "/assets/images/backgrounds/banner_1.jpg",
+            img: "/assets/images/backgrounds/banner5.jpg",
             aboutLink: "/page/about",
         },
         {
-            img: "/assets/images/backgrounds/banner_2.jpg",
+            img: "/assets/images/backgrounds/banner6.jpg",
             aboutLink: "/page/about",
         },
     ];

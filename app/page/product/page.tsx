@@ -5,126 +5,143 @@ import PriceRangeFilter from "../../component/PriceRangeFilter";
 import Link from "next/link";
 
 interface Product {
-  _id?: string;
-  id?: number;
-  name: string;
+  _id: string;
+  productName: string;
   price: number;
-  img: string;
-  category: string;
-  quantity?: number;
+  inStock: boolean;
+  quantity: number;
+  description: string;
+  categoryName: string;
+  brandName: string;
+  image: string;
 }
 
 interface Category {
-  id: number;
-  name: string;
+  _id: string;
+  categoryName: string;
+  parentId: string | null;
+}
+
+interface Brand {
+  _id: string;
+  brandName: string;
+  logoUrl: string;
 }
 
 export default function Product() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [accessToken, setAccessToken] = useState<string | null>(null); // Lưu trữ Access Token
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     setAccessToken(token);
+  }, []);
 
+  useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get<Category[]>('http://localhost:3000/api/categories');
+        const response = await axios.get<Category[]>("http://localhost:5000/api/categories");
         setCategories(response.data);
-        console.log("Fetched categories:", response.data); // Log danh mục lấy được
-      } catch (err: any) {
-        setError(err?.message || "An error occurred while fetching categories.");
-        console.error("Error fetching categories:", err);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
       }
     };
 
-    fetchCategories();
-  }, []);
+    const fetchBrands = async () => {
+      try {
+        const response = await axios.get<Brand[]>("http://localhost:5000/api/brands");
+        setBrands(response.data);
+      } catch (error) {
+        console.error("Error fetching brands:", error);
+      }
+    };
 
-  // Lấy sản phẩm
-  useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get<Product[]>('http://localhost:3000/api/products');
+        const response = await axios.get<Product[]>("http://localhost:5000/api/products");
         setProducts(response.data);
         setFilteredProducts(response.data);
         setLoading(false);
-        console.log("Fetched products:", response.data); // Log sản phẩm lấy được
       } catch (err: any) {
         setError(err?.message || "An unknown error occurred.");
         setLoading(false);
         console.error("Error fetching products:", err);
       }
     };
+
+    fetchCategories();
+    fetchBrands();
     fetchProducts();
   }, []);
 
-  // Lọc sản phẩm theo danh mục, tìm kiếm và sắp xếp
   useEffect(() => {
     let filtered = products;
+
     if (selectedCategory) {
-      filtered = products.filter(product => product.category === selectedCategory);
+      filtered = filtered.filter((product) => product.categoryName === selectedCategory);
     }
+
+    if (selectedBrand) {
+      filtered = filtered.filter((product) => product.brandName === selectedBrand);
+    }
+
     if (searchQuery) {
-      filtered = filtered.filter(product =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      filtered = filtered.filter((product) =>
+        product.productName.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
-    if (sortOrder === 'asc') {
-      filtered.sort((a, b) => a.price - b.price);
-    } else {
-      filtered.sort((a, b) => b.price - a.price);
-    }
+
     setFilteredProducts(filtered);
-    console.log("Filtered products:", filtered); // Log các sản phẩm sau khi lọc
-  }, [selectedCategory, products, sortOrder, searchQuery]);
+  }, [selectedCategory, selectedBrand, searchQuery, products]);
 
   const handleCategoryClick = (categoryName: string) => {
     setSelectedCategory(categoryName);
-    console.log("Selected category:", categoryName); // Log danh mục đã chọn
   };
 
-  const handleSortChange = (order: 'asc' | 'desc') => {
-    setSortOrder(order);
-    console.log("Sort order changed to:", order); // Log trạng thái sắp xếp
+  const handleBrandClick = (brandName: string) => {
+    setSelectedBrand(brandName);
   };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(event.target.value);
-    console.log("Search query:", event.target.value); // Log từ khóa tìm kiếm
   };
 
   const handleAddToCart = (product: Product) => {
-    // Lấy giỏ hàng từ localStorage hoặc khởi tạo giỏ hàng rỗng
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-  
-    // Tìm sản phẩm trong giỏ hàng (dựa theo id)
-    const productIndex = cart.findIndex((item: Product) => item._id === product._id);
-  
-    if (productIndex > -1) {
-      // Nếu sản phẩm đã tồn tại, tăng số lượng
-      cart[productIndex].quantity += 1;
-    } else {
-      // Nếu sản phẩm chưa tồn tại, thêm vào giỏ hàng
-      cart.push({ ...product, quantity: 1 });
+    // Kiểm tra trạng thái còn hàng dựa trên quantity
+    if (product.quantity <= 0) {
+        alert("Sản phẩm này đã hết hàng và không thể thêm vào giỏ.");
+        return;
     }
-  
-    // Cập nhật giỏ hàng trong localStorage
+
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const productIndex = cart.findIndex((item: Product) => item._id === product._id);
+
+    if (productIndex > -1) {
+        if (cart[productIndex].quantity < product.quantity) {
+            cart[productIndex].quantity += 1;
+        } else {
+            alert(`Không thể thêm quá số lượng tồn kho. trong kho chỉ còn ${product.quantity} sản phẩm.`);
+            return;
+        }
+    } else {
+        cart.push({ ...product, quantity: 1 });
+    }
+
     localStorage.setItem("cart", JSON.stringify(cart));
-  
-    // Thông báo người dùng
     alert("Sản phẩm đã được thêm vào giỏ hàng!");
-  };
+};
+
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div>Đang tải chờ xíu...</div>;
   }
 
   if (error) {
@@ -136,9 +153,7 @@ export default function Product() {
       <section className="page-header">
         <div
           className="page-header__bg"
-          style={{
-            backgroundImage: "url(/images/banner/banner6.png)",
-          }}
+          style={{ backgroundImage: "url(/images/banner/banner6.png)" }}
         />
         <div className="container mx-auto">
           <h2 className="page-header__title">Shop left sidebar</h2>
@@ -176,47 +191,51 @@ export default function Product() {
                 <h3 className="product__sidebar__title product__categories__title">Categories</h3>
                 <ul className="list-unstyled">
                   {categories.map((category) => (
-                    <li key={category.id}>
+                    <li key={category._id}>
                       <a
                         href="#"
-                        onClick={() => handleCategoryClick(category.name)}
-                        className="text-gray-700"
+                        onClick={() => handleCategoryClick(category.categoryName)}
+                        className={`text-gray-700 ${selectedCategory === category.categoryName ? "font-bold" : ""}`}
                       >
-                        {category.name}
+                        {category.categoryName}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div className="product__brands product__sidebar__item">
+                <h3 className="product__sidebar__title">Brands</h3>
+                <ul className="list-unstyled">
+                  {brands.map((brand) => (
+                    <li key={brand._id}>
+                      <a
+                        href="#"
+                        onClick={() => handleBrandClick(brand.brandName)}
+                        className={`text-gray-700 ${selectedBrand === brand.brandName ? "font-bold" : ""}`}
+                      >
+                        {brand.brandName}
                       </a>
                     </li>
                   ))}
                 </ul>
               </div>
             </aside>
-
             <div className="col-span-3 filter-option">
               <div className="flex justify-between items-center mb-4 filter-option-inner">
                 <p className="text-lg">Showing {filteredProducts.length} Results</p>
-                <div className="flex space-x-4">
-                  <button
-                    className="px-4 py-2 bg-gray-300 rounded-md"
-                    onClick={() => handleSortChange('asc')}
-                  >
-                    Sort by Price (Low to High)
-                  </button>
-                  <button
-                    className="px-4 py-2 bg-gray-300 rounded-md"
-                    onClick={() => handleSortChange('desc')}
-                  >
-                    Sort by Price (High to Low)
-                  </button>
-                </div>
               </div>
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 product__item">
                 {filteredProducts.map((product) => (
-                  <div key={product.id} className="bg-white product__item wow fadeInUp animated">
+                  <div
+                    key={product._id}
+                    className={`bg-white product__item wow fadeInUp animated ${!product.inStock ? "opacity-50" : ""}`}
+                  >
                     <div className="mb-4">
-                      <Link href={`/page/product-detail`}>
+                      <Link href={`/page/product-detail?id=${product._id}`}>
                         <img
-                          src={product.img}
-                          alt={product.name}
+                          src={product.image}
+                          alt={product.productName}
                           width={100}
                           height={100}
                           className="w-full h-full product__item__image"
@@ -224,31 +243,22 @@ export default function Product() {
                       </Link>
                     </div>
                     <div>
-                      <h4 className="text-[#1e1d1d] text-xl">{product.name}</h4>
+                      <h4 className="text-[#1e1d1d] text-xl">{product.productName}</h4>
                       <span className="price text-lg">{product.price}</span>
                     </div>
                     <button
-                      className="add-to-cart-btn"
+                      className={`px-4 py-2 text-white font-medium ml-[90px] mb-[20px] rounded-md transition ${
+                        !product.inStock
+                          ? "bg-gray-300 cursor-not-allowed"
+                          : "bg-blue-500 hover:bg-blue-600"
+                      }`}
                       onClick={() => handleAddToCart(product)}
+                      disabled={!product.inStock}
                     >
-                      Add to Cart
+                      {!product.inStock ? "Hết hàng" : "Add to Cart"}
                     </button>
                   </div>
                 ))}
-              </div>
-
-              <div className="product__pagination mt-4">
-                <ul className="pagination flex justify-center items-center">
-                  <li>
-                    <button className="prev">&#x2039;</button>
-                  </li>
-                  <li><a href="#">1</a></li>
-                  <li><a href="#">2</a></li>
-                  <li><a href="#">3</a></li>
-                  <li>
-                    <button className="next">&#x203a;</button>
-                  </li>
-                </ul>
               </div>
             </div>
           </div>

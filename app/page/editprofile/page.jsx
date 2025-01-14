@@ -1,152 +1,233 @@
-import React from 'react';
-import "./profile-edit.css";
-import Image from 'next/image';
-import facker from '../../../public/assets/images/team/team-1-1.jpg';
+"use client";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
-const ProfileEdit = () => {
+const AddressManager = () => {
+    // State quản lý dữ liệu
+    const [userData, setUserData] = useState(null);
+    const [addresses, setAddresses] = useState([]);
+    const [newAddress, setNewAddress] = useState("");
+    const [editAddress, setEditAddress] = useState(null);
+    const [editValue, setEditValue] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const accessToken = localStorage.getItem("accessToken");
+
+    // Lấy dữ liệu user và danh sách địa chỉ
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+
+                const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
+                const userId = tokenPayload.id || tokenPayload._id;
+
+                const userResponse = await axios.get(`http://localhost:5000/api/users/${userId}`, {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                    },
+                });
+
+                const addressResponse = await axios.get(
+                    `http://localhost:5000/api/delivery-addresses/user/${userId}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${accessToken}`,
+                        },
+                    }
+                );
+
+                setUserData(userResponse.data);
+                setAddresses(addressResponse.data);
+            } catch (err) {
+                setError(err.message || "Failed to fetch data.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, [accessToken]);
+
+    // Thêm địa chỉ mới
+    const handleAddAddress = async () => {
+        try {
+            if (!newAddress.trim()) {
+                alert("Please enter a valid address.");
+                return;
+            }
+
+            const tokenPayload = JSON.parse(atob(accessToken.split(".")[1]));
+            const userId = tokenPayload.id || tokenPayload._id;
+
+            const response = await axios.post(
+                "http://localhost:5000/api/delivery-addresses",
+                { userId, address: newAddress },
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            setAddresses((prev) => [...prev, response.data]);
+            setNewAddress("");
+            alert("Address added successfully!");
+        } catch (err) {
+            alert("Failed to add address. Please try again.");
+        }
+    };
+
+    // Cập nhật địa chỉ
+    const handleEditAddress = async (id) => {
+        try {
+            if (!editValue.trim()) {
+                alert("Please enter a valid address.");
+                return;
+            }
+
+            const response = await axios.put(
+                `http://localhost:5000/api/delivery-addresses/${id}`,
+                { address: editValue },
+                {
+                    headers: {
+                        Authorization: `Bearer ${accessToken}`,
+                        "Content-Type": "application/json",
+                    },
+                }
+            );
+
+            setAddresses((prev) =>
+                prev.map((addr) =>
+                    addr._id === id ? { ...addr, address: response.data.address.address } : addr
+                )
+            );
+            setEditAddress(null);
+            setEditValue("");
+            alert("Address updated successfully!");
+        } catch (err) {
+            alert("Failed to update address. Please try again.");
+        }
+    };
+
+    // Xóa địa chỉ
+    const handleDeleteAddress = async (id) => {
+        try {
+            await axios.delete(`http://localhost:5000/api/delivery-addresses/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+
+            setAddresses((prev) => prev.filter((addr) => addr._id !== id));
+            alert("Address deleted successfully!");
+        } catch (err) {
+            alert("Failed to delete address. Please try again.");
+        }
+    };
+
+    if (loading) return <p className="text-center text-gray-500">Loading...</p>;
+    if (error) return <p className="text-center text-red-500">{error}</p>;
+
     return (
-        <div className="container w-full mx-auto my-5 max-w-screen-xl shadow-lg rounded-lg overflow-hidden bg-white">
-            <div className="flex flex-col lg:flex-row">
-                {/* Sidebar */}
-                <div className="lg:w-1/4 w-full p-5 text-black mb-5 lg:mb-0"> {/* Thêm khoảng cách giữa menu và content */}
-                    <div className="flex flex-col items-center justify-center">
-                        <Image src={facker} alt="Avatar" width={30} height={30} className="w-30 h-30 rounded-full mb-4" />
-                        <h3 className="mb-4 text-lg">Lee Sang-hyeok</h3>
-                    </div>
-                    <ul className="list-none">
-                        <li className="flex items-center p-2 cursor-pointer hover:bg-gray-800 text-base transition-colors">
-                            <i className="fas fa-user mr-3"></i> Thông tin tài khoản
-                        </li>
-                        <hr className="border-none border-b border-gray-400 my-2" />
-                        <li className="flex items-center p-2 cursor-pointer hover:bg-gray-800 text-base transition-colors">
-                            <i className="fas fa-map-marker-alt mr-3"></i> Sổ địa chỉ
-                        </li>
-                        <hr className="border-none border-b border-gray-400 my-2" />
-                        <li className="flex items-center p-2 cursor-pointer hover:bg-gray-800 text-base transition-colors">
-                            <i className="fas fa-box mr-3"></i> Quản lý đơn hàng
-                        </li>
-                        <hr className="border-none border-b border-gray-400 my-2" />
-                        <li className="flex items-center p-2 cursor-pointer hover:bg-gray-800 text-base transition-colors">
-                            <i className="fas fa-bell mr-3"></i> Thông báo
-                        </li>
-                        <hr className="border-none border-b border-gray-400 my-2" />
-                        <li className="flex items-center p-2 cursor-pointer hover:bg-gray-800 text-base transition-colors">
-                            <i className="fas fa-tag mr-3"></i> Mã giảm giá
-                        </li>
-                        <hr className="border-none border-b border-gray-400 my-2" />
-                        <li className="flex items-center p-2 cursor-pointer hover:bg-gray-800 text-base transition-colors">
-                            <i className="fas fa-gift mr-3"></i> Membership
-                        </li>
-                        <hr className="border-none border-b border-gray-400 my-2" />
-                        <li className="flex items-center p-2 cursor-pointer hover:bg-gray-800 text-base transition-colors">
-                            <i className="fas fa-eye mr-3"></i> Sản phẩm đã xem
-                        </li>
-                    </ul>
+        <div className="container mx-auto p-6 max-w-4xl bg-white shadow-lg rounded-md">
+            <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">Manage Addresses</h1>
+
+            {/* Hiển thị thông tin user */}
+            {userData && (
+                <div className="mb-6 border-b pb-4">
+                    <p className="text-gray-700">
+                        <strong>Username:</strong> {userData.username}
+                    </p>
+                    <p className="text-gray-700">
+                        <strong>Email:</strong> {userData.email}
+                    </p>
+                    <p className="text-gray-700">
+                        <strong>Role:</strong> {userData.role}
+                    </p>
+                    <p className="text-gray-700">
+                        <strong>Account Created:</strong>{" "}
+                        {new Date(userData.createdAt).toLocaleDateString()}
+                    </p>
                 </div>
+            )}
 
-                {/* Content */}
-                <div className="lg:w-3/4 w-full p-5">
-                    <h1 className="text-2xl font-bold text-gray-800 mb-5">Thông Tin Tài Khoản</h1>
-                    
-                    <div className="flex flex-wrap mx-2">
-                        {/* Personal Info */}
-                        <div className="w-full lg:w-1/2 p-2 mb-6"> {/* Thêm khoảng cách dưới Personal Info */}
-                            <h2 className="text-xl text-gray-800 mb-4">Thông Tin Cá Nhân</h2>
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Họ tên</label>
-                                <input type="text" placeholder="Nhập họ tên" className="w-full p-2 border border-gray-300 rounded" />
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Nickname</label>
-                                <input type="text" placeholder="Nhập nickname" className="w-full p-2 border border-gray-300 rounded" />
-                            </div>
-                            <div className="flex space-x-2 mb-4">
-                                <div>
-                                    <label className="block text-gray-700 text-sm font-bold mb-2">Ngày</label>
-                                    <select className="w-full p-2 border border-gray-300 rounded">
-                                        <option value="">DD</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-gray-700 text-sm font-bold mb-2">Tháng</label>
-                                    <select className="w-full p-2 border border-gray-300 rounded">
-                                        <option value="">MM</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="block text-gray-700 text-sm font-bold mb-2">Năm</label>
-                                    <select className="w-full p-2 border border-gray-300 rounded">
-                                        <option value="">YYYY</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Giới tính</label>
-                                <div className="space-x-4">
-                                    <label className="inline-flex items-center">
-                                        <input type="radio" name="gender" className="form-radio" defaultChecked /> Nam
-                                    </label>
-                                    <label className="inline-flex items-center">
-                                        <input type="radio" name="gender" className="form-radio" /> Nữ
-                                    </label>
-                                    <label className="inline-flex items-center">
-                                        <input type="radio" name="gender" className="form-radio" /> Khác
-                                    </label>
-                                </div>
-                            </div>
-                            <div className="mb-4">
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Quốc tịch</label>
-                                <select className="w-full p-2 border border-gray-300 rounded">
-                                    <option>Chọn quốc tịch</option>
-                                </select>
-                            </div>
-                            <div className="flex justify-end">
-                                <button className="bg-red-600 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition-all">Lưu</button>
-                            </div>
-                        </div>
+            {/* Hiển thị danh sách địa chỉ */}
+            <ul className="space-y-4">
+                {addresses.length > 0 ? (
+                    addresses.map((address) => (
+                        <li
+                            key={address._id}
+                            className="flex items-center justify-between bg-gray-100 p-4 rounded-md"
+                        >
+                            {editAddress === address._id ? (
+                                <>
+                                    <input
+                                        type="text"
+                                        value={editValue}
+                                        onChange={(e) => setEditValue(e.target.value)}
+                                        className="border p-2 rounded-md flex-1 mr-4"
+                                    />
+                                    <button
+                                        onClick={() => handleEditAddress(address._id)}
+                                        className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                                    >
+                                        Save
+                                    </button>
+                                    <button
+                                        onClick={() => setEditAddress(null)}
+                                        className="bg-gray-500 text-white px-4 py-2 rounded-md ml-2"
+                                    >
+                                        Cancel
+                                    </button>
+                                </>
+                            ) : (
+                                <>
+                                    <span className="flex-1">{address.address}</span>
+                                    <button
+                                        onClick={() => {
+                                            setEditAddress(address._id);
+                                            setEditValue(address.address);
+                                        }}
+                                        className="bg-yellow-500 text-white px-4 py-2 rounded-md"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeleteAddress(address._id)}
+                                        className="bg-red-500 text-white px-4 py-2 rounded-md ml-2"
+                                    >
+                                        Delete
+                                    </button>
+                                </>
+                            )}
+                        </li>
+                    ))
+                ) : (
+                    <p className="text-center text-gray-500">No addresses found.</p>
+                )}
+            </ul>
 
-                        {/* Account Info */}
-                        <div className="w-full lg:w-1/2 p-2 mb-6 "> {/* Thêm khoảng cách dưới Account Info */}
-                            <h2 className="text-xl text-gray-800 mb-4">Số điện thoại và Email</h2>
-                            <div className="flex items-center mb-4">
-                                <i className="icon-phone-call text-xl mr-2"></i>
-                                <input type="text" placeholder="Số điện thoại" className="w-full p-2 border border-gray-300 rounded" />
-                            </div>
-                            <div className="flex items-center mb-4">
-                                <i className="icon-email text-xl mr-2"></i>
-                                <input type="email" placeholder="Địa chỉ email" className="w-full p-2 border border-gray-300 rounded" />
-                            </div>
-                            <h2 className="text-xl text-gray-800 mb-4">Bảo mật</h2>
-                            <div className="flex items-center mb-4 p-1  rounded">
-                                <i className="icon-padlock text-xl mr-4"></i>
-                                <span className="flex-grow w-full text-gray-800 font-semibold">Đổi mật khẩu</span>
-                                <button className="bg-red-600 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition-all whitespace-nowrap w-100">Cập nhật</button>
-                            </div>
-                            <h2 className="text-xl text-gray-800 mb-4">Liên kết mạng xã hội</h2>
-                            <div className="flex items-center justify-between mb-4">
-                                <i className="fab fa-facebook text-2xl text-blue-600"></i>
-                                <span className="text-lg flex-grow ml-4">Facebook</span>
-                                <button className="bg-red-600 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition-all w-100">Liên kết</button>
-                            </div>
-                            <h2 className="text-xl text-gray-800 mb-4">Đã liên kết</h2>
-                            <div className="flex items-center p-2 rounded">
-                                <i className="fab fa-google text-2xl text-red-600"></i>
-                                <span className="text-lg flex-grow ml-4">Google</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Tier Info */}
-                    <div className="mt-5 p-5 bg-gray-100 rounded-lg">
-                        <h2 className="text-xl text-gray-800 mb-4">Tổng Quan Thứ Bậc</h2>
-                        <p className="text-base mb-1">Hạng thành viên: <strong className="text-orange-500">Gold</strong></p>
-                        <p className="text-base mb-1">Số điểm hiện tại: <strong className="text-orange-500">520 Điểm</strong></p>
-                        <p className="text-base">Số điểm cần tích lũy thêm: <strong className="text-orange-500">480 Điểm</strong></p>
-                    </div>
-                </div>
+            {/* Thêm địa chỉ mới */}
+            <div className="mt-6">
+                <input
+                    type="text"
+                    value={newAddress}
+                    onChange={(e) => setNewAddress(e.target.value)}
+                    placeholder="Enter new address"
+                    className="border p-2 rounded-md w-full mb-4"
+                />
+                <button
+                    onClick={handleAddAddress}
+                    className="bg-green-500 text-white px-6 py-2 rounded-md w-full"
+                >
+                    Add Address
+                </button>
             </div>
         </div>
     );
 };
 
-export default ProfileEdit;
+export default AddressManager;

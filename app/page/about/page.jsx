@@ -84,7 +84,7 @@ const AboutUs = () => {
                         alt="about boskery meat shop"
                         className="sec-title__img"
                     />
-                    <h6 className="sec-title__tagline">about boskery meat shop</h6>
+                    {/* <h6 className="sec-title__tagline">about boskery meat shop</h6> */}
                     <h2 className="sec-title__title text-2xl md:text-5xl">
                         Fresh Cuts Butcher <br /> Shop in city
                     </h2>
@@ -136,7 +136,7 @@ const AboutUs = () => {
                         className="boskery-btn relative inline-block text-white bg-red-600 py-2 px-4 rounded"
                     >
                         <span className="boskery-btn__hover"></span>
-                        <span className="boskery-btn__text">know about us</span>
+                        <span className="boskery-btn__text">About us</span>
                         <i className="icon-meat-3 ml-2"></i>
                     </a>
                     <div className="about-three__profile flex items-center">
@@ -240,13 +240,13 @@ const AboutUs = () => {
                                             </div>
                                             <div className="contact__info__right">
                                                 <h4 className="contact__info__title font-semibold">
-                                                    Call for Delivery
+                                                    Contact
                                                 </h4>
                                                 <a
                                                     href="tel:+92(8800)68900"
                                                     className="contact__info__number text-blue-600"
                                                 >
-                                                    +92 (8800) 68900
+                                                    0336379906
                                                 </a>
                                             </div>
                                         </div>

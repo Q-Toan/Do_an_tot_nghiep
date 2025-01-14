@@ -96,8 +96,8 @@ export default function Header() {
             </div>
 
             <div className="w-full">
-                <div className="bg-red-700 text-white flex justify-between items-center px-[70px] py-3 hidden md:flex">
-                    <div className="flex items-center space-x-4 hidden xxl:flex">
+                <div className="bg-red-700 text-white justify-between items-center px-[70px] py-3 hidden md:flex">
+                    <div className="flex items-center space-x-4 xxl:flex">
                         <i className="fas fa-envelope"></i>
                         <span className='hover:underline'>toanlqps31685@fpt.edu.vn</span>
                         <i className="fas fa-map-marker-alt"></i>
@@ -120,7 +120,7 @@ export default function Header() {
                 <div className="bg-white flex justify-between items-center pl-4">
                     <nav className="relative z-50"> {/* Add a z-index for the entire nav */}
                         <ul className="hidden xxl:flex lg:space-x-6">
-                            {['home', 'about us', 'services', 'pages', 'shop', 'news', 'Contact Us'].map((page) => (
+                            {['home', 'about us', 'pages', 'shop',  'Contact Us'].map((page) => (
                                 <li key={page} className="relative">
                                     <a
                                         href={page === 'about us' ? '/page/about' : page === 'Contact Us' ? '/page/contactus' : page === 'login' ? '/page/login' : page === 'home' ? '/' : page=== 'news grid' ? '/page/newsgrid' : `/${page}`} // Correct the homepage condition
@@ -128,8 +128,7 @@ export default function Header() {
                                         onClick={
                                             page === 'pages' ? (e) => { e.preventDefault(); toggleDropdown(); } : 
                                             page === 'shop' ? (e) => { e.preventDefault(); toggleShopDropdown(); } : 
-                                            page === 'services' ? (e) => { e.preventDefault(); toggleServicesDropdown(); } : 
-                                            page === 'news' ? (e) => { e.preventDefault(); toggleNewsDropdown(); } : undefined}
+                                            page === 'services' ? (e) => { e.preventDefault(); toggleServicesDropdown(); } : undefined}
                                     >
                                         {page.toUpperCase()}
                                     </a>
@@ -140,13 +139,8 @@ export default function Header() {
                                             className={`absolute left-0 bg-white shadow-lg rounded-md mt-2 transition-all w-[200px] z-50 duration-300 ease-in-out transform ${isDropdownOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 hidden'}`}
                                             style={{ transformOrigin: 'top left' }} // Ensure smooth scaling
                                         >
-                                            <li><a href="/page/ourteam" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Our Team</a></li>
-                                            <li><a href="/page/teamcarousel" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Team Carousel</a></li>
-                                            <li><a href="/page/teamdetail" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Team detail</a></li>
-                                            <li><a href="/page/pricing" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Pricing</a></li>
-                                            <li><a href="/page/testimonials" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Testimonials</a></li>
-                                            <li><a href="/page/galleryfillter" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Gallery</a></li>
-                                            <li><a href="/page/faq" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">FAQ</a></li>
+                                            
+                                            
                                             <li><a href="/page/login" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Login</a></li>
                                             <li><a href="/page/register" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Register</a></li>
                                             <li><a href="/page/editprofile" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">Edit Profile</a></li>
@@ -156,8 +150,8 @@ export default function Header() {
                                         </ul>
                                     )}
 
-                                     {/* Submenu for "Shop" */}
-                                     {page === 'shop' && (
+                                    {/* Submenu for "Shop" */}
+                                    {page === 'shop' && (
                                         <ul
                                             className={`absolute left-0 bg-white shadow-lg rounded-md mt-2 transition-all w-[200px] z-50 duration-300 ease-in-out transform ${isShopDropdownOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 hidden'}`}
                                             style={{ transformOrigin: 'top left' }}
@@ -181,7 +175,7 @@ export default function Header() {
                                     )}
 
                                     {/* submenu for news */}
-                                    {page === 'news' && (
+                                    {/* {page === 'news' && (
                                         <ul
                                         className={`absolute left-0 bg-white shadow-lg rounded-md mt-2 transition-all w-[200px] z-50 duration-300 ease-in-out transform ${isNewsDropdownOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 hidden'}`}
                                             style={{ transformOrigin: 'top left' }}>
@@ -191,7 +185,7 @@ export default function Header() {
                                             <li><a href="/page/rightlist" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">News List Right Sidebar</a></li>
                                             <li><a href="/page/newsdetail" className="block px-4 py-2 text-gray-700 hover:bg-gray-100">News Detail</a></li>
                                         </ul>
-                                    )}
+                                    )} */}
                                 </li>
                             ))}
                         </ul>
@@ -205,7 +199,7 @@ export default function Header() {
                     </nav>
 
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2 hidden xl:flex gap-[20px]">
+                        <div className="flex items-center space-x-2 xl:flex gap-[20px]">
                             <span className="main-header__call__icon icon-mobile"></span>
                             <div>
                                 <span className="">CALL ANYTIME</span>
@@ -219,7 +213,7 @@ export default function Header() {
                             </Link>
                             <i className="fas fa-shopping-cart text-black"></i>
                         </div>
-                        <div className="flex justify-center items-center hidden  dt:flex">
+                        <div className="flex justify-center items-center  dt:flex">
                         {accessToken ? (
                             <Link href="/" onClick={handleLogout} className="relative-order flex justify-center items-center bg-red-700 text-white ml-[51px] w-[205px] h-[80px] p-0" style={{ paddingTop: '32px' }}>
                             <span className="relative-order__hover"></span>

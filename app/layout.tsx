@@ -10,8 +10,7 @@ import { CartProvider } from './component/CartContext';
 
 // Metadata for the document head
 export const metadata: Metadata = {
-  title: "Boskery || HTML Template For Butcher & Meat",
-  description: "Boskery is a modern butcher & meat shop HTML5 Template.",
+  title: "Pc & Hight End performance Laptop",
 };
 
 // Root layout component
@@ -21,13 +20,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta charSet="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Home One || Boskery || HTML Template For Butcher & Meat</title>
+        <title>Pc & Hight End performance Laptop</title>
         {/* Favicon Icons */}
         <link rel="apple-touch-icon" sizes="180x180" href="assets/images/favicons/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="assets/images/favicons/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="assets/images/favicons/favicon-16x16.png" />
         <link rel="manifest" href="assets/images/favicons/site.webmanifest" />
-        <meta name="description" content="Boskery is a modern butcher & meat shop HTML5 Template." />
+        <meta name="description" content="Pc & Hight End performance Laptop" />
 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></link>
 

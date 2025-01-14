@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
@@ -19,13 +18,13 @@ export default function LoginPage() {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:3000/api/users/login", {
+      const response = await axios.post("http://localhost:5000/api/users/login", {
         email,
         password,
       });
 
-      if (response.data.accessToken) {
-        localStorage.setItem("accessToken", response.data.accessToken);
+      if (response.data.token) {
+        localStorage.setItem("accessToken", response.data.token);
         router.push("/");
       } else {
         setErrorMessage("Invalid email or password");
